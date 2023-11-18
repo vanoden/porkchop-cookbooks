@@ -1,0 +1,113 @@
+#!/bin/bash
+#
+# /etc/init.d/firewall
+# Subsystem file for "RootSeven Web Server"
+#
+# chkconfig: 2345 95 05
+# description: Firewall Script for RootSeven Web Server
+#
+# processname: firewall
+#
+
+# Source Function Library
+. /etc/rc.d/init.d/functions
+
+###################################
+### User Configuration          ###
+###################################
+# Control Network
+MGMT_NET=96.233.40.72/32
+
+###################################
+### Location of iptables        ###
+###################################
+PATH=$PATH:/sbin:/sbin
+
+RETVAL=0
+prog="firewall"
+
+start ()
+{
+	echo -n "Applying Firewall Policy: "
+
+    ###################################
+    ### Pre-Secure System           ###
+    ###################################
+    # Flush chain rules
+    iptables -F INPUT
+    iptables -F OUTPUT
+    iptables -F FORWARD
+    iptables -X
+    
+    # Set default policy rules
+    iptables -P INPUT DROP
+    iptables -P OUTPUT ACCEPT
+    
+    ###################################
+    ### Firewall System Traffic     ###
+    ###################################
+    echo "Firewall System Traffic"
+    # Allow all connections on loopback interface
+    iptables -A INPUT -j ACCEPT -i lo -s 127.0.0.0/255.0.0.0
+
+    # Allow All Responses to Outgoing Requests
+    iptables -A INPUT -j ACCEPT -m state --state ESTABLISHED,RELATED
+
+    # Allow SSH connections to internal interface from MGMT network
+    iptables -A INPUT -j ACCEPT -i eth0 -p tcp --dport 22
+    
+    # Allow Zabbix connections to internal interface from MGMT network
+    iptables -A INPUT -j ACCEPT -i eth0 -p tcp --dport 10050 -s $MGMT_NET
+
+	# Allow Rsync connections
+	iptables -A INPUT -j ACCEPT -i eth0 -p tcp --dport 873
+
+    # Allow connections to Web Services
+    iptables -A INPUT -j ACCEPT -i eth0 -p tcp --dport 80
+
+    ###################################
+    ### ICMP Packets                ###
+    ###################################
+    # Accept ICMP Ping and (0 and 8) and Destination Unreachable (3) messages
+    echo "Allow and respond to ICMP packets"
+    iptables -A INPUT -j ACCEPT -p icmp --icmp-type echo-reply
+    iptables -A INPUT -j ACCEPT -p icmp --icmp-type echo-request
+    iptables -A INPUT -j ACCEPT -p icmp --icmp-type destination-unreachable
+
+	RETVAL=$?
+	[ "$RETVAL" = 0 ]
+	echo
+}
+
+stop ()
+{
+	echo -n "Flushing Firewall Policy: "
+	iptables -P INPUT ACCEPT
+	iptables -P FORWARD ACCEPT
+	iptables -P OUTPUT ACCEPT
+	iptables -t nat -F
+	iptables -t mangle -F
+	iptables -F
+	iptables -X
+
+	$RETVAL=$?
+	[ "$RETVAL" = 0 ]
+	echo
+}
+
+
+case $1 in
+start)
+	start
+	;;
+stop)
+	stop
+	;;
+restart)
+	stop
+	start
+	;;
+status)
+	iptables -L
+	;;
+esac

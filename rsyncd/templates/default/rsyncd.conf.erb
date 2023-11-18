@@ -1,0 +1,5 @@
+<% @directories.each do |site| %>
+[<%=site['name']%>]
+	path = /export/web_content/<%=site['name']%>
+	read only = true
+<% end %>

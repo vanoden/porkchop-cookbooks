@@ -1,0 +1,153 @@
+#!/bin/bash
+#
+# /etc/init.d/firewall
+# Subsystem file for "External Cloud Server"
+#
+# chkconfig: 2345 95 05
+# description: Firewall Script for Cloud Server
+#
+# processname: firewall
+
+# Source Function Library
+. /etc/rc.d/init.d/functions
+
+###################################
+### User Configuration			###
+###################################
+# Our Interface
+INT_1=eth0
+
+###################################
+### Location of iptables		###
+###################################
+PATH=$PATH:/sbin:/sbin
+
+RETVAL=0
+prog="firewall"
+
+start ()
+{
+        echo -n "Applying Firewall Policy: "
+
+        # Flush chain rules
+        iptables -F INPUT
+        iptables -F OUTPUT
+        iptables -F FORWARD
+        iptables -X
+        iptables -t nat -F
+
+        # Set default policy rules
+        iptables -P INPUT DROP
+        iptables -P OUTPUT ACCEPT
+        iptables -P FORWARD ACCEPT
+        iptables -t nat -P PREROUTING ACCEPT
+
+        ###################################
+        ### Firewall System Traffic		###
+        ###################################
+        echo "Firewall System Traffic"
+        # Allow all connections on loopback interface
+        iptables -A INPUT -j ACCEPT -i lo -s 127.0.0.0/255.0.0.0
+
+        # Allow established and related outside connections to your system
+        iptables -A INPUT -m state --state ESTABLISHED,RELATED -i $INT_1 -j ACCEPT
+
+	# Allow Management Hosts
+<% node[:security][:mgmt_hosts].each do |ip_address| %>
+<%=	"	iptables -A INPUT -p tcp -s #{ip_address} --dport 22 -j ACCEPT" %>
+<% end %>
+
+	# Allow Role Specific Ports
+<% node[:allow_ports].each do |port| %>
+<%=	"	iptables -A INPUT -p tcp --dport #{port} -j ACCEPT" %>
+<% end %>
+<% node[:udp_ports].each do |port| %>
+<%=	"	iptables -A INPUT -p udp --dport #{port} -j ACCEPT" %>
+<% end %>
+
+	# Allow HTTP Access From Specific Hosts
+<% node[:http_clients].each do |ip_address| %>
+<%=	"	iptables -A INPUT -p tcp -s #{ip_address} --dport 80 -j ACCEPT" %>
+<% end %>
+
+<% if @me['role'] == 'mariadb' %>
+	# Allow Database Access From Specific Hosts
+<% @apache_servers.each do |ip_address| %>
+<%=	"	iptables -A INPUT -p tcp -s #{ip_address} --dport 3306 -j ACCEPT" %>
+<% end %>
+<% end %>
+
+<% if @me['role'] == 'ops' %>
+	# Allow Rsync Access from Specific Hosts
+<% @apache_servers.each do |ip_address| %>
+<%=	"	iptables -A INPUT -p tcp -s #{ip_address} --dport 873 -j ACCEPT" %>
+<% end %>
+<% end %>
+
+        # Prevent All Other Outside Initiated Communications
+        iptables -A INPUT -m state --state NEW -i $INT_1 -j LOG --log-prefix "Connection Refused: "
+        iptables -A INPUT -m state --state NEW -i $INT_1 -j DROP
+
+        ###################################
+        ### ICMP Packets				###
+        ###################################
+        # Accept ICMP Ping and (0 and 8) and Destination Unreachable (3) messages
+        echo "Allow and respond to ICMP packets"
+        iptables -A INPUT -j ACCEPT -p icmp --icmp-type echo-reply
+        iptables -A INPUT -j ACCEPT -p icmp --icmp-type echo-request
+        iptables -A INPUT -j ACCEPT -p icmp --icmp-type destination-unreachable
+
+        ###################################
+        ### End IPTABLES Commands		###
+        ###################################
+        # Turn On Outside Interface
+        #ifup $INT_1
+
+        # FTP Connection Tracking
+        modprobe nf_conntrack_ftp
+        modprobe nf_nat_ftp
+
+        # Turn on IP Forwarding
+        echo 1 > /proc/sys/net/ipv4/ip_forward
+
+        RETVAL=$?
+        [ "$RETVAL" = 0 ]
+        echo
+}
+
+stop ()
+{
+        echo -n "Flushing Firewall Policy: "
+        echo 0 > /proc/sys/net/ipv4/ip_forward
+        iptables -P INPUT ACCEPT
+        iptables -P FORWARD ACCEPT
+        iptables -P OUTPUT ACCEPT
+        iptables -t nat -F
+        iptables -t mangle -F
+        iptables -F
+        iptables -X
+
+        # Turn Off Outside Interface
+        ifdown $OUTSIDE_INT
+
+
+        RETVAL=$?
+        [ "$RETVAL" = 0 ]
+        echo
+}
+
+case $1 in
+start)
+        start
+        ;;
+stop)
+        stop
+        ;;
+restart)
+        stop
+        start
+        ;;
+status)
+        iptables -L
+        ;;
+esac

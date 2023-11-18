@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Update Cookbooks
+cd /opt/rootseven && /bin/git pull
+
+# Update Configuration
+cd /etc/chef && /bin/git pull
+
+# Run Chef Solo
+/bin/chef-solo -c /etc/chef/client.rb -j /etc/chef/roles/<%= @personality %>.json > /var/log/chef-solo.log

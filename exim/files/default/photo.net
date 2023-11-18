@@ -1,0 +1,79 @@
+### Alias accounts
+root: jsc
+admin: root, contact
+paypal: glenn
+paypal-queries: contact, jsc
+paypal-receipts: paypal
+amazon: jsc
+adsales: glenn
+advertising: glenn
+editorial: editorialphotonet@gmail.com
+finance: jsc
+gnm: jsc
+googleads: jsc, glenn
+news: glenn
+press: glenn
+# news-editor: pmj
+nsadmin: jsc
+oracle: jsc, davemorgan
+redhat: jsc
+uptime: jsc
+yahooads: jsc
+bandh: jsc
+abuse: steinfoto@comcast.net, jsc
+elves: pmj
+aliases: jsc
+support-ticket-robot: jsc
+ssladmin: jsc
+services: contact
+gc-complaints: contact
+aduncan: glenn
+techsupport: glenn, khinds10@yahoo.com
+support: glenn
+
+# All these aliases below are for sender verification purposes only.
+# No mail should actually come in for these addresses, except errors.
+# bounces: /var/log/exim/bounces.log
+bounces: /dev/null
+bboard: bounces
+bboard-alerts: bounces
+noreply: bounces
+passwords: bounces
+member-directory: bounces
+greetings: bounces
+photocritique-alert: contact
+spam-alert: jsc
+welcome: /dev/null
+info: jsc
+
+# Not clear that any of these are ever used, but leave them in.
+contact: glenn
+classifieds: contact
+dmca-agent: contact
+gift-subscriptions: contact
+subscriptions: contact
+memberservices: contact
+feedback: contact
+
+### People and their aliases. 
+# You don't need to edit this file for people who have set up their
+# email aliases in the database.
+jsc: jinschoi@mac.com
+philg: philg@mit.edu
+raj: rsurati@gmail.com
+rajeev: raj
+rajeevsurati: raj
+josh: joshphotonet@gmail.com
+gpalm: glenn
+hannahthiem: glenn
+dave.morgan: dave@rigskills.ca
+aegrumet: aegrumet@mit.edu
+bobatkins: bobatkins2@hotmail.com
+thappe: affaccount@optimum.net
+csthilaire: glenn
+mcioffi: glenn
+msawyer: glenn
+tkrohmal: glenn
+photosocialapp: glenn
+qaphoto: rizalishan@gmail.com, khinds10.work@gmail.com
+operations: glenn, jsc
