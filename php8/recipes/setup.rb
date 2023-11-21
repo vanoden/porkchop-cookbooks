@@ -35,6 +35,10 @@ package "php#{old_version}" do
 	action	:remove
 end
 
+package "php#{old_version}-common" do
+	action	:remove
+end
+
 package "php#{php_postfix}" do
 	action	:install
 	version	php_version
