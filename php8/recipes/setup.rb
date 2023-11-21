@@ -1,4 +1,4 @@
-php_postfix = ""
+php_postfix = node["php_version"]
 php_version = nil
 
 package "php#{php_postfix}" do
