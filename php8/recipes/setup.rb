@@ -55,11 +55,6 @@ package "php#{php_postfix}-xml" do
 	version	php_version
 	options	['--allowerasing'] 
 end
-package "php#{php_postfix}-xmlrpc" do
-	action	:install
-	version	php_version
-	options	['--allowerasing'] 
-end
 package "php#{php_postfix}-gd" do
 	action	:install
 	version	php_version
