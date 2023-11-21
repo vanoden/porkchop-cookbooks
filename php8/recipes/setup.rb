@@ -1,6 +1,40 @@
 php_postfix = node["php_version"]
 php_version = nil
 
+old_version = "8.1"
+
+package "php#{old_version}-cli" do
+	action	:remove
+end
+
+package "php#{old_version}-opcache" do
+	action	:remove
+end
+
+package "php#{old_version}-mbstring" do
+	action	:remove
+end
+
+package "php#{old_version}-process" do
+	action	:remove
+end
+
+package "php#{old_version}-pdo" do
+	action	:remove
+end
+
+package "php#{old_version}-fpm" do
+	action	:remove
+end
+
+package "php#{old_version}-xml" do
+	action	:remove
+end
+
+package "php#{old_version}" do
+	action	:remove
+end
+
 package "php#{php_postfix}" do
 	action	:install
 	version	php_version
