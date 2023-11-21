@@ -42,31 +42,38 @@ end
 package "php#{php_postfix}" do
 	action	:install
 	version	php_version
+	options	['allowerase'] 
 end
 
 package "php#{php_postfix}-mysqlnd" do
 	action	:install
 	version	php_version
+	options	['allowerase'] 
 end
 package "php#{php_postfix}-xml" do
 	action	:install
 	version	php_version
+	options	['allowerase'] 
 end
 package "php#{php_postfix}-xmlrpc" do
 	action	:install
 	version	php_version
+	options	['allowerase'] 
 end
 package "php#{php_postfix}-gd" do
 	action	:install
 	version	php_version
+	options	['allowerase'] 
 end
 package "php#{php_postfix}-pdo" do
 	action	:install
 	version php_version
+	options	['allowerase'] 
 end
 package "php#{php_postfix}-mbstring" do
 	action	:install
 	version php_version
+	options	['allowerase'] 
 end
 
 if (node['platform'].eql?('raspbian'))
