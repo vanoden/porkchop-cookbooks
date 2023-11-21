@@ -1,4 +1,4 @@
-http_version = [ "2.4.6" ]
+http_version = node['http_version']
 
 log 'platform' do
 	message "Platform: "+node['platform']
