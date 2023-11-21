@@ -87,8 +87,8 @@ else
 	#	action	:install
 	#	version	"7.2.12-1.el7.remi"
 	#end
-	package "php-pear-XML-Serializer" do
-		action	:install
-	end
+	#package "php-pear-XML-Serializer" do
+	#	action	:install
+	#end
 end
 
