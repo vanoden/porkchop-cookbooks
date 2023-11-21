@@ -1,5 +1,6 @@
 php_postfix = node["php_version"]
-php_version = nil
+php_postfix = node["php_version"]
+php_version = "8.2.9"
 
 old_version = "8.1"
 
