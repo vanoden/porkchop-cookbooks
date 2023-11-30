@@ -24,7 +24,7 @@ sites.each do |id|
 
 			directory deploy_path do
 				action :create
-				recursive: true
+				recursive true
 			end
 
 			_command = "/usr/bin/aws s3 cp s3://" + source + " " + deploy_path
