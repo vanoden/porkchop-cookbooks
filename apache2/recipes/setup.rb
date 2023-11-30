@@ -21,9 +21,7 @@ else
 	end
 end
 
-directory "/etc/httpd/sites.d" do
+directory node['httpd_conf_d'] do
 	action	:create
-	owner	"apache"
-	group	"root"
-	mode	"0550"
+	mode	"0755"
 end

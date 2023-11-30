@@ -38,7 +38,7 @@ sites.each do |id|
 					command _command
 				end
 
-				template "/etc/httpd/sites.d/"+site['name']+".conf" do
+				template node["http_conf_d"]+"/"+site['name']+".conf" do
 					source "porkchop.apache.conf"
 					variables ({
 						:site       => site
