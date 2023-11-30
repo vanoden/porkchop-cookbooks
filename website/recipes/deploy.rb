@@ -37,6 +37,27 @@ sites.each do |id|
 				execute 'unpack tarball' do
 					command _command
 				end
+
+				template "/etc/httpd/sites.d/"+site['name']+".conf" do
+					source porkchop.apache.conf
+					variables ({
+						:site       => site
+					})
+					action  :create
+				end
+
+				directory deploy_path+"/config" do
+					action  :create
+					owner   'apache'
+				end
+
+				template deploy_path+"/config/config.php" do
+					source porkchop.php.conf
+					variables ({
+						:site       => site
+					})
+					action  :create
+				end
 			else
 				log "File '"+deploy_path+"/"+site['deploy']['Tarball']+"' not found"
 			end
