@@ -62,5 +62,28 @@ sites.each do |id|
 				log "File '"+deploy_path+"/"+site['deploy']['Tarball']+"' not found"
 			end
 		end
+
+		file deploy_base+"/"+site['deploy']['Tarball'] do
+			action :delete
+		end
+
+		ruby_block "backup old site" do
+			block do
+				::FileUtils.mv(site['base'],site['base']+".old")
+			end
+			only_if { ::File.exist?(site['base']) }
+			only_if { ::File.exist?(deploy_path) }
+			only_if { ::File.exist?(deploy_path+"/config/config.php") }
+		end
+		ruby_block "deploy new site" do
+			block do
+				::FileUtils.mv(deploy_path,site['base'])
+			end
+			only_if { ::File.exist?(deploy_path) }
+		end
 	end
+end
+
+service 'httpd' do
+	action :restart
 end
