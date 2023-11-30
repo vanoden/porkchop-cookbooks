@@ -15,23 +15,31 @@ sites.each do |id|
 		execute 'pull site' do
 			command	_command
 		end
-	elsif site.has_key?('deploy_bucket')
-		log "Tarball deploy "+site['deploy_bucket']
+	elsif site.has_key?('deploy')
+		if site['deploy'].has_key?('S3Bucket')
+			source = site['deploy']['S3Bucket']+"/"+site['deploy']['Tarball']
+			log "Tarball deploy "+source
 
-		deploy_path = deploy_base+"/"+site['name'];
+			deploy_path = deploy_base+"/"+site['name'];
 
-		directory deploy_path do
-			action :create
-			recursive: true
-		end
+			directory deploy_path do
+				action :create
+				recursive: true
+			end
 
-		_command = "/usr/bin/aws s3 cp s3://" + site['deploy_bucket']+"/"+site['deploy_tarball']+" "+deploy_path
-		execute 'pull tarball' do
-			command _command
-		end
-		_command = "cd "+deploy_path+"; /usr/bin/tar zxvf "+site['deploy_tarball']
-		execute 'unpack tarball' do
-			command _command
+			_command = "/usr/bin/aws s3 cp s3://" + source + " " + deploy_path
+			execute 'pull tarball' do
+				command _command
+			end
+
+			if ::File.exist?(deploy_path+"/"+site['deploy']['tarball'])
+				_command = "cd "+deploy_path+"; /usr/bin/tar zxvf "+site['deploy_tarball']
+				execute 'unpack tarball' do
+					command _command
+				end
+			else
+				log "File not found"
+			end
 		end
 	end
 end
