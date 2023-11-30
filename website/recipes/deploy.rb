@@ -32,8 +32,8 @@ sites.each do |id|
 				command _command
 			end
 
-			if ::File.exist?(deploy_path+"/"+site['deploy']['tarball'])
-				_command = "cd "+deploy_path+"; /usr/bin/tar zxvf "+site['deploy_tarball']
+			if ::File.exist?(deploy_path+"/"+site['deploy']['Tarball'])
+				_command = "cd "+deploy_path+"; /usr/bin/tar zxvf "+site['deploy']['Tarball']
 				execute 'unpack tarball' do
 					command _command
 				end
