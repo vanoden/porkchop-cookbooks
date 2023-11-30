@@ -38,7 +38,7 @@ sites.each do |id|
 					command _command
 				end
 			else
-				log "File '"+deploy_path+"/"+site['deploy']['Tarball'])+"' not found"
+				log "File '"+deploy_path+"/"+site['deploy']['Tarball']+"' not found"
 			end
 		end
 	end
