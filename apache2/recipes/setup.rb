@@ -26,7 +26,7 @@ else
 	end
 end
 
-directory node['httpd_conf_d'] do
-	action	:create
-	mode	"0755"
-end
+#directory node['httpd_conf_d'] do
+#	action	:create
+#	mode	"0755"
+#end
