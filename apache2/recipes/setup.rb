@@ -1,9 +1,7 @@
 http_version = node['http_version']
 
-log "Node"
-log node
-log "Site"
-#log site
+log "Node HTTP Config Path"
+log node['http_conf_d']
 
 log 'platform' do
 	message "Platform: "+node['platform']
@@ -26,7 +24,7 @@ else
 	end
 end
 
-#directory node['httpd_conf_d'] do
+#directory node['http_conf_d'] do
 #	action	:create
 #	mode	"0755"
 #end
