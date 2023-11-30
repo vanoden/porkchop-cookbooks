@@ -39,7 +39,7 @@ sites.each do |id|
 				end
 
 				template "/etc/httpd/sites.d/"+site['name']+".conf" do
-					source porkchop.apache.conf
+					source "porkchop.apache.conf"
 					variables ({
 						:site       => site
 					})
@@ -52,7 +52,7 @@ sites.each do |id|
 				end
 
 				template deploy_path+"/config/config.php" do
-					source porkchop.php.conf
+					source "porkchop.php.conf"
 					variables ({
 						:site       => site
 					})
