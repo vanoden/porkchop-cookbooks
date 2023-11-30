@@ -20,3 +20,10 @@ else
 		version	http_version
 	end
 end
+
+directory "/etc/httpd/sites.d" do
+	action	:create
+	owner	"apache"
+	group	"root"
+	mode	"0550"
+end
