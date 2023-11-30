@@ -3,7 +3,7 @@ http_version = node['http_version']
 log "Node"
 log node
 log "Site"
-log site
+#log site
 
 log 'platform' do
 	message "Platform: "+node['platform']
