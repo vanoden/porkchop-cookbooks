@@ -1,5 +1,7 @@
 http_version = node['http_version']
 
+log node
+
 log 'platform' do
 	message "Platform: "+node['platform']
 	level	:info
