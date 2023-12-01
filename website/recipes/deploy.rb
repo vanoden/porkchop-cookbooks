@@ -44,7 +44,7 @@ sites.each do |id|
 				only_if { ::File.exist?(tarball_path) }
 			end
 
-			_command = "/usr/bin/aws s3 cp s3://" + source + " " + tarball_path
+			_command = "/usr/bin/aws s3 cp s3://" + source + " " + tarball_path + ">> /tmp/download.log 2>&1"
 			tries = 0
 			max_tries = 3
 			while tries < max_tries do
