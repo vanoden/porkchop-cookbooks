@@ -42,13 +42,19 @@ sites.each do |id|
 			_command = "/usr/bin/aws s3 cp s3://" + source + " " + tarball_path
 			execute 'pull tarball' do
 				command _command
+				notifies :sleep, 'chef_sleep[sleeping for 5 seconds]', :immediately
+			end
+
+			# Give the tarball a chance to download
+			chef_sleep "sleeping for 5 seconds" do
+				seconds 5
 			end
 
 			if ::File.exist?(tarball_path)
-				_command = "cd "+deploy_path+"; /usr/bin/tar zxvf "+tarball_path
+				_command = "/usr/bin/tar zxvf "+tarball_path
 
-				execute "unpack tarball "+tarball_path do
-					command _command
+				archive_file tarball_path do
+					destination deploy_path
 				end
 
 				file tarball_path do
