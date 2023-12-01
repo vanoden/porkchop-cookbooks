@@ -40,10 +40,17 @@ sites.each do |id|
 			end
 
 			_command = "/usr/bin/aws s3 cp s3://" + source + " " + tarball_path
-			execute 'pull tarball' do
-				command _command
-				retries 3
-				retry_delay 5
+			tries = 0
+			max_tries = 3
+			while (tries < max_tries && !::File.exist?(tarball_path))
+				tries ++;
+				execute 'pull tarball' do
+					command _command
+				end
+				chef_sleep "waitforfile" do
+					command "sleep 1"
+					not_if { ::File.exist?(tarball_path) }
+				end
 			end
 
 			if ::File.exist?(tarball_path)
