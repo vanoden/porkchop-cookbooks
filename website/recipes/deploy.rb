@@ -48,7 +48,7 @@ sites.each do |id|
 					command _command
 				end
 				chef_sleep "waitforfile" do
-					command "sleep 1"
+					seconds 2
 					not_if { ::File.exist?(tarball_path) }
 				end
 				if (::File.exist?(tarball_path))
