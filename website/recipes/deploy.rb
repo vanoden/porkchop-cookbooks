@@ -67,17 +67,25 @@ sites.each do |id|
 			action :delete
 		end
 
+		ruby block "rotate out backup" do
+			block do
+				::FileUtils.rm_rf(site['porkchop']['BASE']+".old")
+			end
+			only_if { ::File.exist?(site['porkchop']['BASE']+".old") }
+		end
+
 		ruby_block "backup old site" do
 			block do
-				::FileUtils.mv(site['base'],site['base']+".old")
+				::FileUtils.mv(site['porkchop']['BASE'],site['BASE']+".old")
 			end
-			only_if { ::File.exist?(site['base']) }
+			only_if { ::File.exist?(site['porkchop']['BASE']) }
 			only_if { ::File.exist?(deploy_path) }
 			only_if { ::File.exist?(deploy_path+"/config/config.php") }
 		end
+
 		ruby_block "deploy new site" do
 			block do
-				::FileUtils.mv(deploy_path,site['base'])
+				::FileUtils.mv(deploy_path,site['porkchop']['BASE'])
 			end
 			only_if { ::File.exist?(deploy_path) }
 		end
