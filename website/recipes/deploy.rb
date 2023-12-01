@@ -68,7 +68,7 @@ sites.each do |id|
 			end
 		end
 
-		log "Deleting old backup" do
+		log "Deleting old backup "+site['porkchop']['BASE']+".old" do
 			only_if { ::File.exist?(site['porkchop']['BASE']+".old") }
 		end
 
@@ -79,22 +79,22 @@ sites.each do |id|
 			only_if { ::File.exist?(site['porkchop']['BASE']+".old") }
 		end
 
-		log "Backing up old site" do
+		log "Backing up current site "+site['porkchop']['BASE'] do
 			only_if { ::File.exist?(site['porkchop']['BASE']) }
 			only_if { ::File.exist?(deploy_path) }
 			only_if { ::File.exist?(deploy_path+"/config/config.php") }
 		end
 
-		ruby_block "backup old site" do
+		ruby_block "backup current site" do
 			block do
-				::FileUtils.mv(site['porkchop']['BASE'],site['BASE']+".old")
+				::FileUtils.mv(site['porkchop']['BASE'],site['porkchop']['BASE']+".old")
 			end
 			only_if { ::File.exist?(site['porkchop']['BASE']) }
 			only_if { ::File.exist?(deploy_path) }
 			only_if { ::File.exist?(deploy_path+"/config/config.php") }
 		end
 
-		log "Deploying new site" do
+		log "Deploying new site to "+site['porkchop']['BASE'] do
 			only_if { ::File.exist?(deploy_path) }
 		end
 
