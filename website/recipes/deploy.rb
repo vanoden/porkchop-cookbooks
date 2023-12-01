@@ -39,6 +39,11 @@ sites.each do |id|
 				recursive true
 			end
 
+			file tarball_path do
+				action :delete
+				only_if { ::File.exist?(tarball_path) }
+			end
+
 			_command = "/usr/bin/aws s3 cp s3://" + source + " " + tarball_path
 			tries = 0
 			max_tries = 3
@@ -48,7 +53,7 @@ sites.each do |id|
 					command _command
 				end
 				chef_sleep "waitforfile" do
-					seconds 2
+					seconds 5
 					not_if { ::File.exist?(tarball_path) }
 				end
 				if (::File.exist?(tarball_path))
