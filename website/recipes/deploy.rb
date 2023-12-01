@@ -51,6 +51,7 @@ sites.each do |id|
 				tries += 1
 				execute 'pull tarball' do
 					command _command
+					compile_time true
 				end
 				chef_sleep "waitforfile" do
 					seconds 5
