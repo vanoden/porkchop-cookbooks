@@ -53,6 +53,12 @@ sites.each do |id|
 			if ::File.exist?(tarball_path)
 				_command = "/usr/bin/tar zxvf "+tarball_path
 
+				directory deploy_path do
+					action :delete
+					recursive true
+					only_if { ::File.exist?(deploy_path) }
+				end
+
 				archive_file tarball_path do
 					destination deploy_path
 				end
