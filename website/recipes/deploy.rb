@@ -20,26 +20,38 @@ sites.each do |id|
 			source = site['deploy']['S3Bucket']+"/"+site['deploy']['Tarball']
 			log "Tarball deploy "+source
 
+			tarball_path = deploy_base+"/"+site['deploy']['Tarball']
 			deploy_path = deploy_base+"/"+site['name'];
+			live_path = site['porkchop']['BASE'];
+			backup_path = site['porkchop']['BASE']+".old";
+
+			# Where the tarball is downloaded to
+			log "TARBALL PATH: "+tarball_path
+			# Where the tarball is extracted to
+			log "DEPLOY PATH: "+deploy_path
+			# Where the live site is
+			log "LIVE PATH: "+live_path
+			# Where the live site is backed up to
+			log "BACKUP PATH: "+backup_path
 
 			directory deploy_path do
 				action :create
 				recursive true
 			end
 
-			_command = "/usr/bin/aws s3 cp s3://" + source + " " + deploy_base
+			_command = "/usr/bin/aws s3 cp s3://" + source + " " + tarball_path
 			execute 'pull tarball' do
 				command _command
 			end
 
-			if ::File.exist?(deploy_base+"/"+site['deploy']['Tarball'])
-				_command = "cd "+deploy_path+"; /usr/bin/tar zxvf "+deploy_base+"/"+site['deploy']['Tarball']
+			if ::File.exist?(tarball_path)
+				_command = "cd "+deploy_path+"; /usr/bin/tar zxvf "+tarball_path
 
-				execute "unpack tarball "+deploy_base+"/"+site['deploy']['Tarball'] do
+				execute "unpack tarball "+tarball_path do
 					command _command
 				end
 
-				file deploy_base+"/"+site['deploy']['Tarball'] do
+				file tarball_path do
 					action :delete
 				end
 
@@ -64,47 +76,47 @@ sites.each do |id|
 					action  :create
 				end
 			else
-				log "File '"+deploy_path+"/"+site['deploy']['Tarball']+"' not found"
+				log "File '"+tarball_path+"' not found"
 			end
 		end
 
-		log "Deleting old backup "+site['porkchop']['BASE']+".old" do
-			only_if { ::File.exist?(site['porkchop']['BASE']+".old") }
+		log "Deleting old backup "+backup_path do
+			only_if { ::File.exist?(backup_path) }
 			only_if { ::File.exist?(deploy_path) }
 			only_if { ::File.exist?(deploy_path+"/config/config.php") }
 		end
 
 		ruby_block "rotate out backup" do
 			block do
-				::FileUtils.rm_rf(site['porkchop']['BASE']+".old")
+				::FileUtils.rm_rf(backup_path)
 			end
-			only_if { ::File.exist?(site['porkchop']['BASE']+".old") }
+			only_if { ::File.exist?(backup_path) }
 			only_if { ::File.exist?(deploy_path) }
 			only_if { ::File.exist?(deploy_path+"/config/config.php") }
 		end
 
-		log "Backing up current site "+site['porkchop']['BASE'] do
-			only_if { ::File.exist?(site['porkchop']['BASE']) }
+		log "Backing up current site "+live_path do
+			only_if { ::File.exist?(live_path) }
 			only_if { ::File.exist?(deploy_path) }
 			only_if { ::File.exist?(deploy_path+"/config/config.php") }
 		end
 
 		ruby_block "backup current site" do
 			block do
-				::FileUtils.mv(site['porkchop']['BASE'],site['porkchop']['BASE']+".old")
+				::FileUtils.mv(live_path,backup_path)
 			end
-			only_if { ::File.exist?(site['porkchop']['BASE']) }
+			only_if { ::File.exist?(live_path) }
 			only_if { ::File.exist?(deploy_path) }
 			only_if { ::File.exist?(deploy_path+"/config/config.php") }
 		end
 
-		log "Deploying new site to "+site['porkchop']['BASE'] do
+		log "Deploying new site to "+live_path do
 			only_if { ::File.exist?(deploy_path) }
 		end
 
 		ruby_block "deploy new site" do
 			block do
-				::FileUtils.mv(deploy_path,site['porkchop']['BASE'])
+				::FileUtils.mv(deploy_path,live_path)
 			end
 			only_if { ::File.exist?(deploy_path) }
 		end
