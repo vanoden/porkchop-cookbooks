@@ -42,12 +42,8 @@ sites.each do |id|
 			_command = "/usr/bin/aws s3 cp s3://" + source + " " + tarball_path
 			execute 'pull tarball' do
 				command _command
-				notifies :sleep, 'chef_sleep[sleeping for 5 seconds]', :immediately
-			end
-
-			# Give the tarball a chance to download
-			chef_sleep "sleeping for 5 seconds" do
-				seconds 5
+				retries 3
+				retry_delay 5
 			end
 
 			if ::File.exist?(tarball_path)
