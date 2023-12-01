@@ -75,50 +75,50 @@ sites.each do |id|
 					})
 					action  :create
 				end
+
+				log "Deleting old backup "+backup_path do
+					only_if { ::File.exist?(backup_path) }
+					only_if { ::File.exist?(deploy_path) }
+					only_if { ::File.exist?(deploy_path+"/config/config.php") }
+				end
+		
+				ruby_block "rotate out backup" do
+					block do
+						::FileUtils.rm_rf(backup_path)
+					end
+					only_if { ::File.exist?(backup_path) }
+					only_if { ::File.exist?(deploy_path) }
+					only_if { ::File.exist?(deploy_path+"/config/config.php") }
+				end
+		
+				log "Backing up current site "+live_path do
+					only_if { ::File.exist?(live_path) }
+					only_if { ::File.exist?(deploy_path) }
+					only_if { ::File.exist?(deploy_path+"/config/config.php") }
+				end
+		
+				ruby_block "backup current site" do
+					block do
+						::FileUtils.mv(live_path,backup_path)
+					end
+					only_if { ::File.exist?(live_path) }
+					only_if { ::File.exist?(deploy_path) }
+					only_if { ::File.exist?(deploy_path+"/config/config.php") }
+				end
+		
+				log "Deploying new site to "+live_path do
+					only_if { ::File.exist?(deploy_path) }
+				end
+		
+				ruby_block "deploy new site" do
+					block do
+						::FileUtils.mv(deploy_path,live_path)
+					end
+					only_if { ::File.exist?(deploy_path) }
+				end
 			else
 				log "File '"+tarball_path+"' not found"
 			end
-		end
-
-		log "Deleting old backup "+backup_path do
-			only_if { ::File.exist?(backup_path) }
-			only_if { ::File.exist?(deploy_path) }
-			only_if { ::File.exist?(deploy_path+"/config/config.php") }
-		end
-
-		ruby_block "rotate out backup" do
-			block do
-				::FileUtils.rm_rf(backup_path)
-			end
-			only_if { ::File.exist?(backup_path) }
-			only_if { ::File.exist?(deploy_path) }
-			only_if { ::File.exist?(deploy_path+"/config/config.php") }
-		end
-
-		log "Backing up current site "+live_path do
-			only_if { ::File.exist?(live_path) }
-			only_if { ::File.exist?(deploy_path) }
-			only_if { ::File.exist?(deploy_path+"/config/config.php") }
-		end
-
-		ruby_block "backup current site" do
-			block do
-				::FileUtils.mv(live_path,backup_path)
-			end
-			only_if { ::File.exist?(live_path) }
-			only_if { ::File.exist?(deploy_path) }
-			only_if { ::File.exist?(deploy_path+"/config/config.php") }
-		end
-
-		log "Deploying new site to "+live_path do
-			only_if { ::File.exist?(deploy_path) }
-		end
-
-		ruby_block "deploy new site" do
-			block do
-				::FileUtils.mv(deploy_path,live_path)
-			end
-			only_if { ::File.exist?(deploy_path) }
 		end
 	end
 end
