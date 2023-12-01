@@ -67,7 +67,7 @@ sites.each do |id|
 			action :delete
 		end
 
-		ruby block "rotate out backup" do
+		ruby_block "rotate out backup" do
 			block do
 				::FileUtils.rm_rf(site['porkchop']['BASE']+".old")
 			end
