@@ -41,6 +41,7 @@ sites.each do |id|
 
 			file tarball_path do
 				action :delete
+				compile_time true
 				only_if { ::File.exist?(tarball_path) }
 			end
 
