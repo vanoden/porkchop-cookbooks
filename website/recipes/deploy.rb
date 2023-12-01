@@ -70,6 +70,8 @@ sites.each do |id|
 
 		log "Deleting old backup "+site['porkchop']['BASE']+".old" do
 			only_if { ::File.exist?(site['porkchop']['BASE']+".old") }
+			only_if { ::File.exist?(deploy_path) }
+			only_if { ::File.exist?(deploy_path+"/config/config.php") }
 		end
 
 		ruby_block "rotate out backup" do
@@ -77,6 +79,8 @@ sites.each do |id|
 				::FileUtils.rm_rf(site['porkchop']['BASE']+".old")
 			end
 			only_if { ::File.exist?(site['porkchop']['BASE']+".old") }
+			only_if { ::File.exist?(deploy_path) }
+			only_if { ::File.exist?(deploy_path+"/config/config.php") }
 		end
 
 		log "Backing up current site "+site['porkchop']['BASE'] do
