@@ -43,7 +43,7 @@ sites.each do |id|
 			tries = 0
 			max_tries = 3
 			while (tries < max_tries && !::File.exist?(tarball_path))
-				tries ++;
+				tries ++
 				execute 'pull tarball' do
 					command _command
 				end
