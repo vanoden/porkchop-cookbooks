@@ -27,15 +27,20 @@ sites.each do |id|
 				recursive true
 			end
 
-			_command = "/usr/bin/aws s3 cp s3://" + source + " " + deploy_path
+			_command = "/usr/bin/aws s3 cp s3://" + source + " " + deploy_base
 			execute 'pull tarball' do
 				command _command
 			end
 
-			if ::File.exist?(deploy_path+"/"+site['deploy']['Tarball'])
-				_command = "cd "+deploy_path+"; /usr/bin/tar zxvf "+site['deploy']['Tarball']
-				execute 'unpack tarball' do
+			if ::File.exist?(deploy_base+"/"+site['deploy']['Tarball'])
+				_command = "cd "+deploy_path+"; /usr/bin/tar zxvf "+deploy_base+"/"+site['deploy']['Tarball']
+
+				execute "unpack tarball "+deploy_base+"/"+site['deploy']['Tarball'] do
 					command _command
+				end
+
+				file deploy_base+"/"+site['deploy']['Tarball'] do
+					action :delete
 				end
 
 				template node["http_conf_d"]+"/"+site['name']+".conf" do
@@ -63,8 +68,8 @@ sites.each do |id|
 			end
 		end
 
-		file deploy_base+"/"+site['deploy']['Tarball'] do
-			action :delete
+		log "Deleting old backup" do
+			only_if { ::File.exist?(site['porkchop']['BASE']+".old") }
 		end
 
 		ruby_block "rotate out backup" do
@@ -74,6 +79,12 @@ sites.each do |id|
 			only_if { ::File.exist?(site['porkchop']['BASE']+".old") }
 		end
 
+		log "Backing up old site" do
+			only_if { ::File.exist?(site['porkchop']['BASE']) }
+			only_if { ::File.exist?(deploy_path) }
+			only_if { ::File.exist?(deploy_path+"/config/config.php") }
+		end
+
 		ruby_block "backup old site" do
 			block do
 				::FileUtils.mv(site['porkchop']['BASE'],site['BASE']+".old")
@@ -81,6 +92,10 @@ sites.each do |id|
 			only_if { ::File.exist?(site['porkchop']['BASE']) }
 			only_if { ::File.exist?(deploy_path) }
 			only_if { ::File.exist?(deploy_path+"/config/config.php") }
+		end
+
+		log "Deploying new site" do
+			only_if { ::File.exist?(deploy_path) }
 		end
 
 		ruby_block "deploy new site" do
