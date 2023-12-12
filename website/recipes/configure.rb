@@ -11,6 +11,10 @@ sites.each do |id|
 		owner   'apache'
 	end
 
+	directory "/var/log/httpd/"+site['name'] do
+		action	:create
+	end
+
 	if type == 'wordpress'
 		template "/etc/httpd/sites.d/"+site['name']+".conf" do
 			source "wordpress.apache.conf"
