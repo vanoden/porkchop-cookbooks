@@ -26,6 +26,7 @@ end
 
 template "/etc/httpd/conf/httpd.conf" do
 	action	:create
+	source "httpd.conf"
 end
 
 directory node['http_conf_d'] do
