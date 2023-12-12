@@ -24,6 +24,10 @@ else
 	end
 end
 
+template "/etc/httpd/conf/httpd.conf" do
+	action	:create
+end
+
 directory node['http_conf_d'] do
 	action	:create
 	mode	"0755"
