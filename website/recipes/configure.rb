@@ -6,15 +6,32 @@ sites.each do |id|
 
 	type = site['type']
 
+	# Website Base Folder
 	directory "/var/www/"+site['name'] do
 		action  :create
 		owner   'apache'
 	end
 
+	# Website Server Logs
 	directory "/var/log/httpd/"+site['name'] do
 		action	:create
 	end
 
+	# Website Application Log
+	directory "/var/lib/porkchop/api" do
+		action	:create
+		ownder	"apache"
+		recursive	true
+	end
+
+	# Website Cache Folder
+	directory "/var/lib/porkchop/"+site['name'] do
+		action	:create
+		owner	"apache"
+		recursive true
+	end
+
+	# Website Server Configuration
 	if type == 'porkchop'
 		template "/etc/httpd/sites.d/"+site['name']+".conf" do
 			source porkchop.apache.conf
