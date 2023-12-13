@@ -20,7 +20,7 @@ sites.each do |id|
 	# Website Application Log
 	directory "/var/lib/porkchop/api" do
 		action	:create
-		ownder	"apache"
+		owner	"apache"
 		recursive	true
 	end
 
