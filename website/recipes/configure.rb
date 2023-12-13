@@ -18,7 +18,7 @@ sites.each do |id|
 	end
 
 	# Website Application Log
-	directory "/var/lib/porkchop/api" do
+	directory "/var/lib/porkchop/api/"+site['name'] do
 		action	:create
 		owner	"apache"
 		recursive	true
