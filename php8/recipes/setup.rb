@@ -14,8 +14,9 @@ package "php#{php_postfix}" do
 end
 
 packages.each do |package|
-package "php#{php_postfix}-#{package}" do
-	action	:install
-	#version	php_version
-	#options	['--allowerasing'] 
+	package "php#{php_postfix}-#{package}" do
+		action	:install
+		#version	php_version
+		#options	['--allowerasing'] 
+	end
 end
