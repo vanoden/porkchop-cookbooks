@@ -149,5 +149,5 @@ sites.each do |id|
 end
 
 service 'httpd' do
-	action :restart
+	action :nothing
 end
