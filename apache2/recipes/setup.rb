@@ -26,19 +26,19 @@ end
 
 cookbook_file "/etc/httpd/conf.modules.d/00-remoteip.conf" do
 	action	:create
-	notifies :restart, 'httpd'
+	notifies :restart, 'service[httpd]'
 end
 
 template "/etc/httpd/conf/httpd.conf" do
 	action	:create
 	source "httpd.conf"
-	notifies :restart, 'httpd'
+	notifies :restart, 'service[httpd]'
 end
 
 directory node['http_conf_d'] do
 	action	:create
 	mode	"0755"
-	notifies :restart, 'httpd'
+	notifies :restart, 'service[httpd]'
 end
 
 service "httpd" do
