@@ -2,7 +2,7 @@ php_postfix = node["php_version"]
 php_postfix = "82"
 php_postfix = "82"
 
-packages = ["php","php-cli","php-mysqlnd","php-xml","php-gd","php-pdo","php-mbstring","php-pear"]
+packages = ["php","php-cli","php-mysqlnd","php-xml","php-gd","php-pdo","php-mbstring","php-pear","php-imagick"]
 if (node['platform'].eql?('raspbian'))
 	packages.push("devel","process");
 end
