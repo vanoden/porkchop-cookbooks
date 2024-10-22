@@ -1,6 +1,6 @@
 directory "/etc/httpd/sites.d"
 
-template "/etc/rsyslog.conf"
+template "/etc/rsyslog.conf" do
 	action	:create
 	source	"server.conf"
 	notifies :restart, 'service[rsyslog]'
