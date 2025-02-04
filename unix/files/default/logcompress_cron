@@ -1,0 +1,2 @@
+# Compress Files for Collection
+5,10,35,50 * * * * logcollect for dir in `find /logs -type d -print`; do for file in `ls -t $dir/*.log |/usr/bin/tail -n +2`; do echo "gzip $file"; /usr/bin/gzip $file; done; done
