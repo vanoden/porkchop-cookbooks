@@ -1,4 +1,4 @@
-template /etc/logrotate.d/porkchop do
+template "/etc/logrotate.d/porkchop" do
 	source 'logrotate.erb'
 	owner 'root'
 	group 'root'
