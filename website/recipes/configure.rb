@@ -31,6 +31,13 @@ sites.each do |id|
 		recursive true
 	end
 
+	# Website Storage Cache Folder
+	directory "/var/lib/porkchop/"+site['name']+"/file_cache" do
+		action :create
+		owner	"apache"
+		recursive true
+	end
+
 	# Website Server Configuration
 	if type == 'porkchop'
 		template "/etc/httpd/sites.d/"+site['name']+".conf" do
